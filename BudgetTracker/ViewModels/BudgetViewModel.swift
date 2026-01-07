@@ -5,6 +5,27 @@
 //  Created by Valentine on 07/01/2026.
 //
 
-class BudgetViewModel {
-    //TODO
+import Foundation
+import Combine
+
+final class BudgetViewModel: ObservableObject {
+
+    @Published private(set) var transactions: [Transaction] = []
+
+    func addTransaction(
+        description: String,
+        amount: Decimal,
+        date: Date,
+        type: Transaction.TransactionType
+    ) {
+        let transaction = Transaction(
+            id: UUID(),
+            description: description,
+            amount: amount,
+            date: date,
+            type: type
+        )
+
+        transactions.append(transaction)
+    }
 }
