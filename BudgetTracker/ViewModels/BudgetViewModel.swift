@@ -40,4 +40,8 @@ final class BudgetViewModel: ObservableObject {
             .filter { $0.type == .income }
             .reduce(Decimal.zero) { $0 + $1.amount }
     }
+
+    func calculateBalance() -> Decimal {
+        calulateIncome() - calculateExpenses()
+    }
 }
