@@ -29,6 +29,10 @@ final class BudgetViewModel: ObservableObject {
         transactions.append(transaction)
     }
 
+    func removeTransaction(id: UUID) {
+        transactions.removeAll { $0.id == id }
+    }
+
     func calculateExpenses() -> Decimal {
         transactions
             .filter { $0.type == .expense }
