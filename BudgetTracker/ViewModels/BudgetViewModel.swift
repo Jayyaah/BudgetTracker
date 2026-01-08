@@ -28,4 +28,11 @@ final class BudgetViewModel: ObservableObject {
 
         transactions.append(transaction)
     }
+
+    func calculateExpenses() -> Decimal {
+        transactions
+            .filter { $0.type == .expense }
+            .reduce(Decimal.zero) { $0 + $1.amount }
+    }
+
 }
