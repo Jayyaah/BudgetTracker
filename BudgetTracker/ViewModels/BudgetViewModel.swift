@@ -33,19 +33,19 @@ final class BudgetViewModel: ObservableObject {
         transactions.removeAll { $0.id == id }
     }
 
-    func calculateExpenses() -> Decimal {
+    var expense: Decimal {
         transactions
             .filter { $0.type == .expense }
             .reduce(Decimal.zero) { $0 + $1.amount }
     }
 
-    func calculateIncome() -> Decimal {
+    var income: Decimal {
         transactions
             .filter { $0.type == .income }
             .reduce(Decimal.zero) { $0 + $1.amount }
     }
 
-    func calculateBalance() -> Decimal {
-        calculateIncome() - calculateExpenses()
+    var balance: Decimal {
+        income - expense
     }
 }
