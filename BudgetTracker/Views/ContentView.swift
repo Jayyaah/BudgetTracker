@@ -8,12 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var viewModel = BudgetViewModel()
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            DashboardView(viewModel: viewModel)
         }
         .padding()
     }
