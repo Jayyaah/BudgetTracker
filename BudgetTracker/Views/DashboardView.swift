@@ -15,6 +15,14 @@ struct DashboardView: View {
                     type: .income
                 )
             }
+            Button("Add test expense") {
+                viewModel.addTransaction(
+                    description: "Test Income",
+                    amount: 1000.0,
+                    date: Date(),
+                    type: .expense
+                )
+            }
         }
     }
 }
