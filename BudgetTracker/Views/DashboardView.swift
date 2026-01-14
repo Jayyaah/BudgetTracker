@@ -20,10 +20,25 @@ struct DashboardView: View {
             Button("Add test expense") {
                 viewModel.addTransaction(
                     description: "Test Income",
-                    amount: 1000.0,
+                    amount: 500.0,
                     date: Date(),
                     type: .expense
                 )
+            }
+            List {
+                ForEach(viewModel.transactions) { transaction in
+                    HStack {
+                        Text(transaction.description)
+                        Spacer()
+                        Text("\(transaction.amount)")
+                    }
+                }
+                .onDelete { indexSet in
+                    for index in indexSet {
+                        let transaction = viewModel.transactions[index]
+                        viewModel.removeTransaction(id: transaction.id)
+                    }
+                }
             }
         }
     }
