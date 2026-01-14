@@ -49,6 +49,16 @@ final class BudgetViewModel: ObservableObject {
             }
     }
     
+    private func loadTransactions() {
+            guard let data = UserDefaults.standard.data(forKey: transactionsKey) else {
+                return
+            }
+
+            do {
+                transactions = try JSONDecoder().decode([Transaction].self, from: data)
+            } catch {
+                print("Failed to load transactions:", error)
+            }
     }
 
     var expense: Decimal {
