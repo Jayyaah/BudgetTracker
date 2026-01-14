@@ -11,7 +11,12 @@ import Combine
 final class BudgetViewModel: ObservableObject {
 
     @Published private(set) var transactions: [Transaction] = []
+    private let transactionsKey = "transactions"
 
+    init() {
+            loadTransactions()
+    }
+    
     func addTransaction(
         description: String,
         amount: Decimal,
