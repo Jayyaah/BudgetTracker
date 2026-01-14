@@ -2,7 +2,6 @@ import SwiftUI
 
 struct DashboardView: View {
     @ObservedObject var viewModel: BudgetViewModel
-
     @State private var isShowingAddTransaction = false
 
     private let currencyFormatter: NumberFormatter = {
@@ -21,69 +20,65 @@ struct DashboardView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
+            List {
 
-                // Summary card
-                VStack(spacing: 16) {
-                    VStack(spacing: 4) {
-                        Text("Balance")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                // Dashboard section
+                Section {
+                    VStack(spacing: 16) {
 
-                        Text(formatted(viewModel.balance))
-                            .font(.largeTitle.bold())
-                            .foregroundStyle(viewModel.balance >= 0 ? .green : .red)
-                    }
-
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Income")
+                        VStack(spacing: 12) {
+                            Text("Balance")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            Text(formatted(viewModel.income))
-                                .font(.headline)
-                                .foregroundStyle(.green)
-                        }
 
-                        Spacer()
+                            Text(formatted(viewModel.balance))
+                                .font(.largeTitle.bold())
+                                .foregroundStyle(viewModel.balance >= 0 ? .green : .red)
 
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text("Expenses")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text(formatted(viewModel.expense))
-                                .font(.headline)
-                                .foregroundStyle(.red)
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Income")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text(formatted(viewModel.income))
+                                        .foregroundStyle(.green)
+                                }
+
+                                Spacer()
+
+                                VStack(alignment: .trailing, spacing: 4) {
+                                    Text("Expenses")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text(formatted(viewModel.expense))
+                                        .foregroundStyle(.red)
+                                }
+                            }
                         }
+                        .padding()
+                        .background(.ultraThinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+
+                        Button {
+                            isShowingAddTransaction = true
+                        } label: {
+                            Label("Add Transaction", systemImage: "plus.circle.fill")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
                     }
+                    .padding(.vertical)
                 }
-                .padding()
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .padding(.horizontal)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
 
-                // Add button
-                Button {
-                    isShowingAddTransaction = true
-                } label: {
-                    Label("Add Transaction", systemImage: "plus.circle.fill")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .padding(.horizontal)
-                .sheet(isPresented: $isShowingAddTransaction) {
-                    AddTransactionView(viewModel: viewModel)
-                }
-
-                // Transactions list
-                List {
+                // Transactions section
+                Section {
                     ForEach(viewModel.transactions) { transaction in
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(transaction.description)
-                                    .font(.body)
-
                                 Text(transaction.type == .income ? "Income" : "Expense")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
@@ -106,10 +101,13 @@ struct DashboardView: View {
                         }
                     }
                 }
-                .scrollContentBackground(.hidden)
-                .listStyle(.insetGrouped)
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
             .navigationTitle("Dashboard")
+            .sheet(isPresented: $isShowingAddTransaction) {
+                AddTransactionView(viewModel: viewModel)
+            }
         }
     }
 }
