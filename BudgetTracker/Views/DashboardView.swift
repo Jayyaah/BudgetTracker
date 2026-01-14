@@ -29,29 +29,24 @@ struct DashboardView: View {
             from: NSDecimalNumber(decimal: amount)
         ) ?? "0 €"
     }
+    
+    @State private var isShowingAddTransaction = false
+
 
     var body: some View {
+        
         VStack {
             Text("Balance: \(formattedBalance)")
             Text("Income: \(formattedIncome)")
             Text("Expenses: \(formattedExpense)")
 
-            Button("Add test income") {
-                viewModel.addTransaction(
-                    description: "Test Income",
-                    amount: 1000.0,
-                    date: Date(),
-                    type: .income
-                )
+            Button("Add Transaction") {
+                isShowingAddTransaction = true
             }
-            Button("Add test expense") {
-                viewModel.addTransaction(
-                    description: "Test Expense",
-                    amount: 500.0,
-                    date: Date(),
-                    type: .expense
-                )
+            .sheet(isPresented: $isShowingAddTransaction) {
+                AddTransactionView(viewModel: viewModel)
             }
+            
             List {
                 ForEach(viewModel.transactions) { transaction in
                     HStack {
