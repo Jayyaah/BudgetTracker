@@ -1,3 +1,5 @@
+import SwiftUI
+
 struct DashboardView: View {
     @ObservedObject var viewModel: BudgetViewModel
 
