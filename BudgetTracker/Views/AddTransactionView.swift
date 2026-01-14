@@ -10,38 +10,66 @@ struct AddTransactionView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section(header: Text("Details")) {
-                    TextField("Description", text: $descriptionText)
-                    TextField("Amount", text: $amountText)
-                        .keyboardType(.decimalPad)
+            VStack(spacing: 20) {
+
+                // Card summary (type + amount)
+                VStack(spacing: 12) {
                     Picker("Type", selection: $isIncome) {
                         Text("Income").tag(true)
                         Text("Expense").tag(false)
                     }
                     .pickerStyle(.segmented)
+
+                    TextField("Amount", text: $amountText)
+                        .keyboardType(.decimalPad)
+                        .font(.largeTitle.bold())
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(isIncome ? .green : .red)
                 }
+                .padding()
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .padding(.horizontal)
+
+                // Details
+                Form {
+                    Section("Details") {
+                        TextField("Description", text: $descriptionText)
+                    }
+                }
+                .scrollDisabled(true)
+
+                Spacer()
             }
-            .navigationTitle("Add Transaction")
+            .navigationTitle("New Transaction")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
+
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { save() }
-                        .disabled(!canSave)
+                    Button("Save") {
+                        save()
+                    }
+                    .disabled(!canSave)
                 }
             }
         }
     }
 
     private var canSave: Bool {
-        guard !descriptionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
+        guard !descriptionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return false
+        }
         return Decimal(string: amountText.replacingOccurrences(of: ",", with: ".")) != nil
     }
 
     private func save() {
-        guard let amount = Decimal(string: amountText.replacingOccurrences(of: ",", with: ".")) else { return }
+        guard let amount = Decimal(string: amountText.replacingOccurrences(of: ",", with: ".")) else {
+            return
+        }
 
         viewModel.addTransaction(
             description: descriptionText,
