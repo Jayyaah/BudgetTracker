@@ -27,7 +27,7 @@ struct DashboardView: View {
                     VStack(spacing: 16) {
 
                         VStack(spacing: 12) {
-                            Text("Balance")
+                            Text("balance")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
 
@@ -37,7 +37,7 @@ struct DashboardView: View {
 
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("Income")
+                                    Text("incomes")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     Text(formatted(viewModel.income))
@@ -47,7 +47,7 @@ struct DashboardView: View {
                                 Spacer()
 
                                 VStack(alignment: .trailing, spacing: 4) {
-                                    Text("Expenses")
+                                    Text("expenses")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     Text(formatted(viewModel.expense))
@@ -62,8 +62,11 @@ struct DashboardView: View {
                         Button {
                             isShowingAddTransaction = true
                         } label: {
-                            Label("Add Transaction", systemImage: "plus.circle.fill")
-                                .frame(maxWidth: .infinity)
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                Text("add_transaction")
+                            }
+                            .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
@@ -79,7 +82,7 @@ struct DashboardView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(transaction.description)
-                                Text(transaction.type == .income ? "Income" : "Expense")
+                                Text(transaction.type == .income ? "income" : "expense")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -104,7 +107,7 @@ struct DashboardView: View {
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
-            .navigationTitle("Dashboard")
+            .navigationTitle("dashboard.title")
             .sheet(isPresented: $isShowingAddTransaction) {
                 AddTransactionView(viewModel: viewModel)
             }
