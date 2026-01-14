@@ -24,12 +24,17 @@ struct DashboardView: View {
             from: NSDecimalNumber(decimal: viewModel.balance)
         ) ?? "0 €"
     }
+    private func formattedAmount(_ amount: Decimal) -> String {
+        currencyFormatter.string(
+            from: NSDecimalNumber(decimal: amount)
+        ) ?? "0 €"
+    }
 
     var body: some View {
         VStack {
-            Text("Balance: \(viewModel.balance)")
-            Text("Income: \(viewModel.income)")
-            Text("Expenses: \(viewModel.expense)")
+            Text("Balance: \(formattedBalance)")
+            Text("Income: \(formattedIncome)")
+            Text("Expenses: \(formattedExpense)")
 
             Button("Add test income") {
                 viewModel.addTransaction(
@@ -52,7 +57,7 @@ struct DashboardView: View {
                     HStack {
                         Text(transaction.description)
                         Spacer()
-                        Text("\(transaction.amount)")
+                        Text(formattedAmount(transaction.amount))
                     }
                 }
                 .onDelete { indexSet in
