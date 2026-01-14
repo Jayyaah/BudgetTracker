@@ -32,10 +32,23 @@ final class BudgetViewModel: ObservableObject {
         )
 
         transactions.append(transaction)
+        saveTransactions()
     }
 
     func removeTransaction(id: UUID) {
         transactions.removeAll { $0.id == id }
+        saveTransactions()
+    }
+    
+    private func saveTransactions() {
+            do {
+                let data = try JSONEncoder().encode(transactions)
+                UserDefaults.standard.set(data, forKey: transactionsKey)
+            } catch {
+                print("Failed to save transactions:", error)
+            }
+    }
+    
     }
 
     var expense: Decimal {
