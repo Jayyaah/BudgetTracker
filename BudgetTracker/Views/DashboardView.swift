@@ -2,6 +2,9 @@ import SwiftUI
 
 struct DashboardView: View {
     @ObservedObject var viewModel: BudgetViewModel
+
+    @State private var isShowingAddTransaction = false
+
     private let currencyFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
@@ -9,59 +12,104 @@ struct DashboardView: View {
         formatter.locale = Locale(identifier: "fr_FR")
         return formatter
     }()
-    private var formattedIncome: String {
-        currencyFormatter.string(
-            from: NSDecimalNumber(decimal: viewModel.income)
-        ) ?? "0 €"
-    }
-    private var formattedExpense: String {
-        currencyFormatter.string(
-            from: NSDecimalNumber(decimal: viewModel.expense)
-        ) ?? "0 €"
-    }
-    private var formattedBalance: String {
-        currencyFormatter.string(
-            from: NSDecimalNumber(decimal: viewModel.balance)
-        ) ?? "0 €"
-    }
-    private func formattedAmount(_ amount: Decimal) -> String {
+
+    private func formatted(_ amount: Decimal) -> String {
         currencyFormatter.string(
             from: NSDecimalNumber(decimal: amount)
         ) ?? "0 €"
     }
-    
-    @State private var isShowingAddTransaction = false
-
 
     var body: some View {
-        
-        VStack {
-            Text("Balance: \(formattedBalance)")
-            Text("Income: \(formattedIncome)")
-            Text("Expenses: \(formattedExpense)")
+        NavigationStack {
+            VStack(spacing: 20) {
 
-            Button("Add Transaction") {
-                isShowingAddTransaction = true
-            }
-            .sheet(isPresented: $isShowingAddTransaction) {
-                AddTransactionView(viewModel: viewModel)
-            }
-            
-            List {
-                ForEach(viewModel.transactions) { transaction in
+                // Summary card
+                VStack(spacing: 16) {
+                    VStack(spacing: 4) {
+                        Text("Balance")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Text(formatted(viewModel.balance))
+                            .font(.largeTitle.bold())
+                            .foregroundStyle(viewModel.balance >= 0 ? .green : .red)
+                    }
+
                     HStack {
-                        Text(transaction.description)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Income")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(formatted(viewModel.income))
+                                .font(.headline)
+                                .foregroundStyle(.green)
+                        }
+
                         Spacer()
-                        Text(formattedAmount(transaction.amount))
+
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Expenses")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(formatted(viewModel.expense))
+                                .font(.headline)
+                                .foregroundStyle(.red)
+                        }
                     }
                 }
-                .onDelete { indexSet in
-                    for index in indexSet {
-                        let transaction = viewModel.transactions[index]
-                        viewModel.removeTransaction(id: transaction.id)
+                .padding()
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .padding(.horizontal)
+
+                // Add button
+                Button {
+                    isShowingAddTransaction = true
+                } label: {
+                    Label("Add Transaction", systemImage: "plus.circle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .padding(.horizontal)
+                .sheet(isPresented: $isShowingAddTransaction) {
+                    AddTransactionView(viewModel: viewModel)
+                }
+
+                // Transactions list
+                List {
+                    ForEach(viewModel.transactions) { transaction in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(transaction.description)
+                                    .font(.body)
+
+                                Text(transaction.type == .income ? "Income" : "Expense")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            Text(formatted(transaction.amount))
+                                .fontWeight(.semibold)
+                                .foregroundStyle(
+                                    transaction.type == .income ? .green : .red
+                                )
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .onDelete { indexSet in
+                        for index in indexSet {
+                            let transaction = viewModel.transactions[index]
+                            viewModel.removeTransaction(id: transaction.id)
+                        }
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .listStyle(.insetGrouped)
             }
+            .navigationTitle("Dashboard")
         }
     }
 }
