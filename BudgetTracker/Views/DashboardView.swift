@@ -17,6 +17,14 @@ struct DashboardView: View {
             from: NSDecimalNumber(decimal: amount)
         ) ?? "0 €"
     }
+    
+    private let dateFormatter: DateFormatter = {
+        let dateFromat = DateFormatter()
+        dateFromat.calendar = Calendar(identifier: .gregorian)
+        dateFromat.locale = Locale(identifier: "fr_FR")
+        dateFromat.dateFormat = "dd/MM/yyyy"
+        return dateFromat
+    }()
 
     var body: some View {
         NavigationStack {
@@ -26,50 +34,42 @@ struct DashboardView: View {
                 Section {
                     VStack(spacing: 16) {
 
-                        VStack(spacing: 12) {
+                        VStack(spacing: 8) {
                             Text("balance")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
 
                             Text(formatted(viewModel.balance))
-                                .font(.largeTitle.bold())
+                                .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                                .monospacedDigit()
                                 .foregroundStyle(viewModel.balance >= 0 ? .green : .red)
 
                             HStack {
-                                VStack(alignment: .leading, spacing: 4) {
+                                VStack(alignment: .leading, spacing: 2) {
                                     Text("incomes")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     Text(formatted(viewModel.income))
+                                        .font(.callout.weight(.semibold))
                                         .foregroundStyle(.green)
+                                        .monospacedDigit()
                                 }
 
                                 Spacer()
 
-                                VStack(alignment: .trailing, spacing: 4) {
+                                VStack(alignment: .trailing, spacing: 2) {
                                     Text("expenses")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     Text(formatted(viewModel.expense))
+                                        .font(.callout.weight(.semibold))
                                         .foregroundStyle(.red)
+                                        .monospacedDigit()
                                 }
                             }
                         }
                         .padding()
-                        .background(.ultraThinMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-
-                        Button {
-                            isShowingAddTransaction = true
-                        } label: {
-                            HStack {
-                                Image(systemName: "plus.circle.fill")
-                                Text("add_transaction")
-                            }
-                            .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
+                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
                     }
                     .padding(.vertical)
                 }
@@ -79,22 +79,26 @@ struct DashboardView: View {
                 // Transactions section
                 Section {
                     ForEach(viewModel.transactions) { transaction in
-                        HStack {
+                        HStack(spacing: 12) {
+                            Circle()
+                                .fill(transaction.type == .income ? Color.green : Color.red)
+                                .frame(width: 6, height: 6)
+
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(transaction.description)
-                                Text(transaction.type == .income ? "income" : "expense")
+                                    .font(.body)
+
+                                Text(dateFormatter.string(from: transaction.date))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                Text(transaction.date, style: .date)
                             }
 
                             Spacer()
 
                             Text(formatted(transaction.amount))
-                                .fontWeight(.semibold)
-                                .foregroundStyle(
-                                    transaction.type == .income ? .green : .red
-                                )
+                                .font(.body.weight(.semibold))
+                                .monospacedDigit()
+                                .foregroundStyle(transaction.type == .income ? .green : .red)
                         }
                         .padding(.vertical, 4)
                     }
@@ -104,14 +108,31 @@ struct DashboardView: View {
                             viewModel.removeTransaction(id: transaction.id)
                         }
                     }
+                } header: {
+                    Text("transactions")
+                        .textCase(nil)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
                 }
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .navigationTitle("dashboard.title")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        isShowingAddTransaction = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .accessibilityLabel(Text("add_transaction"))
+                }
+            }
             .sheet(isPresented: $isShowingAddTransaction) {
                 AddTransactionView(viewModel: viewModel)
             }
         }
     }
 }
+
