@@ -7,6 +7,7 @@ struct AddTransactionView: View {
     @State private var descriptionText: String = ""
     @State private var amountText: String = ""
     @State private var isIncome: Bool = true
+    @State private var date: Date = Date()
 
     var body: some View {
         NavigationStack {
@@ -34,6 +35,7 @@ struct AddTransactionView: View {
                 // Details
                 Form {
                     Section("Details") {
+                        DatePicker("Date", selection: $date)
                         TextField("Description", text: $descriptionText)
                     }
                 }
