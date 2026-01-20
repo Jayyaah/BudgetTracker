@@ -35,7 +35,11 @@ struct AddTransactionView: View {
                 // Details
                 Form {
                     Section("Details") {
-                        DatePicker("Date", selection: $date)
+                        HStack{
+                            Image(systemName: "calendar.badge.clock")
+                            DatePicker("", selection: $date, displayedComponents: [.date])
+                        }
+                        
                         TextField("Description", text: $descriptionText)
                     }
                 }
