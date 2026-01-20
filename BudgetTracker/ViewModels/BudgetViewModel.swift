@@ -76,4 +76,10 @@ final class BudgetViewModel: ObservableObject {
     var balance: Decimal {
         income - expense
     }
+    
+    var date: Date {
+        transactions
+            .map(\.date)
+            .max() ?? Date()
+    }
 }
