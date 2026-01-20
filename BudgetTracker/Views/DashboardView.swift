@@ -85,6 +85,7 @@ struct DashboardView: View {
                                 Text(transaction.type == .income ? "income" : "expense")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
+                                Text(transaction.date, style: .date)
                             }
 
                             Spacer()
